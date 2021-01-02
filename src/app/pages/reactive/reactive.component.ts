@@ -16,9 +16,16 @@ export class ReactiveComponent implements OnInit {
 
   crearFormulario() {
     this.forma = this.form.group({
-      nombre: [''],
-      apellido: [''],
-      correo: [''],
+      nombre: ['', [Validators.required, Validators.minLength(5)]],
+      apellido: ['', [Validators.required]],
+      correo: [
+        '',
+        [
+          Validators.required,
+          Validators.email,
+          Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,3}$'),
+        ],
+      ],
     });
   }
 
