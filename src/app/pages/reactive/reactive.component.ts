@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ValidadoresService } from 'src/app/services/validadores.service';
 
 @Component({
   selector: 'app-reactive',
@@ -8,12 +9,26 @@ import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class ReactiveComponent implements OnInit {
   forma: FormGroup;
-  constructor(private form: FormBuilder) {
+  constructor(
+    private form: FormBuilder,
+    private validadores: ValidadoresService
+  ) {
     this.crearFormulario();
     this.cargarDataAlFormulario();
   }
 
   ngOnInit(): void {}
+
+  get pass1NoValido() {
+    return this.forma.get('pass1').invalid && this.forma.get('pass1').touched;
+  }
+
+  get pass2NoValido() {
+    const pass1 = this.forma.get('pass1').value;
+    const pass2 = this.forma.get('pass2').value;
+
+    return pass1 === pass2 ? false : true;
+  }
 
   get nombreNoValido() {
     return this.forma.get('nombre').invalid && this.forma.get('nombre').touched;
@@ -48,23 +63,30 @@ export class ReactiveComponent implements OnInit {
   }
 
   crearFormulario() {
-    this.forma = this.form.group({
-      nombre: ['', [Validators.required, Validators.minLength(5)]],
-      apellido: ['', [Validators.required]],
-      correo: [
-        '',
-        [
-          Validators.required,
-          Validators.email,
-          Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,3}$'),
+    this.forma = this.form.group(
+      {
+        nombre: ['', [Validators.required, Validators.minLength(5)]],
+        apellido: ['', [Validators.required, this.validadores.noHerrera]],
+        correo: [
+          '',
+          [
+            Validators.required,
+            Validators.email,
+            Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,3}$'),
+          ],
         ],
-      ],
-      direccion: this.form.group({
-        distrito: ['', Validators.required],
-        ciudad: ['', Validators.required],
-      }),
-      pasatiempos: this.form.array([]),
-    });
+        pass1: ['', Validators.required],
+        pass2: ['', Validators.required],
+        direccion: this.form.group({
+          distrito: ['', Validators.required],
+          ciudad: ['', Validators.required],
+        }),
+        pasatiempos: this.form.array([]),
+      },
+      {
+        validators: [this.validadores.passwordsIguales('pass1', 'pass2')],
+      }
+    );
   }
 
   agregarPasatiempo() {
@@ -97,12 +119,13 @@ export class ReactiveComponent implements OnInit {
   cargarDataAlFormulario() {
     // this.forma.setValue({
     this.forma.reset({
-      nombre: '',
-      apellido: '',
-      correo: '',
+      nombre: 'Diego',
+      apellido: 'Pagini',
+      correo: 'diegopagini@dev.com',
+
       direccion: {
-        distrito: '',
-        ciudad: '',
+        distrito: 'Mdq',
+        ciudad: 'Mar del Plata',
       },
     });
   }
