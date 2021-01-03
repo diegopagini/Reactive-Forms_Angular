@@ -63,8 +63,16 @@ export class ReactiveComponent implements OnInit {
         distrito: ['', Validators.required],
         ciudad: ['', Validators.required],
       }),
-      pasatiempos: this.form.array([[], [], []]),
+      pasatiempos: this.form.array([]),
     });
+  }
+
+  agregarPasatiempo() {
+    this.pasatiempo.push(this.form.control('', Validators.required));
+  }
+
+  borrarPasatiempo(i: number) {
+    this.pasatiempo.removeAt(i);
   }
 
   guardar() {
