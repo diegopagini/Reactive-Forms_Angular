@@ -44,6 +44,12 @@ export class ReactiveComponent implements OnInit {
     return this.forma.get('correo').invalid && this.forma.get('correo').touched;
   }
 
+  get usuarioNoValido() {
+    return (
+      this.forma.get('usuario').invalid && this.forma.get('usuario').touched
+    );
+  }
+
   get distritoNoValido() {
     return (
       this.forma.get('direccion.distrito').invalid &&
@@ -75,6 +81,7 @@ export class ReactiveComponent implements OnInit {
             Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,3}$'),
           ],
         ],
+        usuario: ['', , this.validadores.existeUsuario],
         pass1: ['', Validators.required],
         pass2: ['', Validators.required],
         direccion: this.form.group({

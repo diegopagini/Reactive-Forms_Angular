@@ -1,5 +1,10 @@
 import { Injectable } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { Observable } from 'rxjs';
+
+interface ErrorValidate {
+  [s: string]: boolean;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -27,5 +32,19 @@ export class ValidadoresService {
         pass2Control.setErrors({ noEsIgual: true });
       }
     };
+  }
+
+  existeUsuario(
+    control: FormControl
+  ): Promise<ErrorValidate> | Observable<ErrorValidate> {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (control.value === 'strider') {
+          resolve({ existe: true });
+        } else {
+          resolve(null);
+        }
+      }, 3500);
+    });
   }
 }
