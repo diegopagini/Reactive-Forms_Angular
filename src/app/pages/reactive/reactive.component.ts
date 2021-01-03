@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-reactive',
@@ -10,6 +10,7 @@ export class ReactiveComponent implements OnInit {
   forma: FormGroup;
   constructor(private form: FormBuilder) {
     this.crearFormulario();
+    this.cargarDataAlFormulario();
   }
 
   ngOnInit(): void {}
@@ -28,6 +29,24 @@ export class ReactiveComponent implements OnInit {
     return this.forma.get('correo').invalid && this.forma.get('correo').touched;
   }
 
+  get distritoNoValido() {
+    return (
+      this.forma.get('direccion.distrito').invalid &&
+      this.forma.get('direccion.distrito').touched
+    );
+  }
+
+  get ciudadNoValido() {
+    return (
+      this.forma.get('direccion.ciudad').invalid &&
+      this.forma.get('direccion.ciudad').touched
+    );
+  }
+
+  get pasatiempo() {
+    return this.forma.get('pasatiempos') as FormArray;
+  }
+
   crearFormulario() {
     this.forma = this.form.group({
       nombre: ['', [Validators.required, Validators.minLength(5)]],
@@ -40,6 +59,11 @@ export class ReactiveComponent implements OnInit {
           Validators.pattern('[a-z0-9._%+-]+@[a-z0-9.-]+.[a-z]{2,3}$'),
         ],
       ],
+      direccion: this.form.group({
+        distrito: ['', Validators.required],
+        ciudad: ['', Validators.required],
+      }),
+      pasatiempos: this.form.array([[], [], []]),
     });
   }
 
@@ -47,8 +71,31 @@ export class ReactiveComponent implements OnInit {
     console.log(this.forma);
     if (this.forma.invalid) {
       return Object.values(this.forma.controls).forEach((control) => {
-        control.markAllAsTouched();
+        if (control instanceof FormGroup) {
+          Object.values(control.controls).forEach((control) => {
+            control.markAllAsTouched();
+          });
+        } else {
+          control.markAllAsTouched();
+        }
       });
     }
+
+    this.forma.reset({
+      nombre: 'sin nombre',
+    });
+  }
+
+  cargarDataAlFormulario() {
+    // this.forma.setValue({
+    this.forma.reset({
+      nombre: '',
+      apellido: '',
+      correo: '',
+      direccion: {
+        distrito: '',
+        ciudad: '',
+      },
+    });
   }
 }
